@@ -17,4 +17,4 @@ NTP_SERVER=""
   
 ## Security
 
-Please take note that application.lua exposes a Lua interpreter over telnet. This is intended behaviour while reverse engineering the serial protocol, but might not be what you want in your network.
+Please take note that `application.lua` exposes a Lua interpreter over telnet (see `telnet_init()`). This is intended behaviour while reverse engineering the serial protocol, but might not be what you want in your network.

@@ -14,3 +14,7 @@ NTP_SERVER=""
 
   2. Upload these files to an ESP8266 running the NodeMCU firmware
   3. Refer to [Egyras' work](https://github.com/Egyras/Panasonic-H-Aquarea) for wiring
+  
+## Security
+
+Please take note that application.lua exposes a Lua interpreter over telnet. This is intended behaviour while reverse engineering the serial protocol, but might not be what you want in your network.

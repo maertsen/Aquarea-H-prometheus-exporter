@@ -1,5 +1,8 @@
 PANASONIC_QUERY=string.char(0x71, 0x6c, 0x01, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12)
 
+HTTP_OK="HTTP/1.0 200 OK\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/plain; version=0.0.4\r\n\r\n"
+HTTP_TIMEOUT="HTTP/1.0 504 Gateway Timeout\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/plain; version=0.0.4\r\n\r\n"
+
 function uart_send_query()
     print("u> [Panasonic query]")
     uart.write(1, PANASONIC_QUERY)
@@ -24,10 +27,6 @@ function hex(buf)
     return buf:gsub('.', function (c) return string.format('%02X ', string.byte(c)) end)
 end
 
-function http_header()
-    return "HTTP/1.0 200 OK\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/plain; version=0.0.4\r\n\r\n"
-end
-
 function http_init()
 
     print('starting web server...')
@@ -38,12 +37,19 @@ function http_init()
         srv:listen(80, function(conn)
             conn:on("receive", function(sock, data)
                 print("h< "  .. data)
+
+                -- fail if response over uart takes too long
+                local timeout = tmr.create():register(3000, tmr.ALARM_SINGLE, function()
+                    uart.on("data") -- unregister callback
+                    sock:send(HTTP_TIMEOUT, function (sck) sck.close() end)
+                end)
         
                 -- register response callback
                 uart.on("data", 203, function (uart_response)
+                    timeout:unregister()
                     print("u< "..hex(uart_response))
 
-                    sock:send(http_header(), function ()
+                    sock:send(HTTP_OK, function ()
                         sock:send("# RAW: "..hex(uart_response).."\n", function ()
                             local readout = parse_uart_response(uart_response)
                             uart_response = nil
@@ -72,6 +78,7 @@ function http_init()
                     end)
                 end, 0)
 
+                timeout:start()
                 uart_send_query()
             end)
         end)

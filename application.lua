@@ -35,7 +35,7 @@ function http_init()
         
                 -- register response callback
                 uart.on("data", 203, function (uart_response)
-                    print("u< "..hex_dump(uart_response, ""))
+                    print("u< "..hex(uart_response))
 
                     sock:send(http_header(), function ()
                         sock:send("# RAW: "..hex(uart_response).."\n", function ()

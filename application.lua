@@ -45,7 +45,7 @@ function http_init()
                 end)
         
                 -- register response callback
-                uart.on("data", 203, function (uart_response)
+                uart.on("data", 0, function (uart_response)
                     timeout:unregister()
                     print("u< "..hex(uart_response))
 

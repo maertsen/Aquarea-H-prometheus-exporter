@@ -80,7 +80,7 @@ function telnet_init()
             then con_std:send(str)
         end
     end
-    node.output(s_output, 0)   -- re-direct output to function s_ouput.
+    node.output(s_output, 1)   -- re-direct output to function s_ouput.
         c:on("receive",function(c,l)
             node.input(l)           -- works like pcall(loadstring(l)) but support multiple separate line
         end)

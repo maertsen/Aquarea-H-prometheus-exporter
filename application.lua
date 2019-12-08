@@ -2,7 +2,7 @@ PANASONIC_QUERY=string.char(0x71, 0x6c, 0x01, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00
 
 function uart_send_query()
     print("u> [Panasonic query]")
-    uart.write(0, PANASONIC_QUERY)
+    uart.write(1, PANASONIC_QUERY)
 end
 
 function makepromlines(name, source)
@@ -11,7 +11,13 @@ end
   
 function uart_init()
     print("setup UART...")
+
+    -- read on GPIO13 / D7, GPIO15 remains unused
+    uart.alt(1)
     uart.setup(0, 9600, 8, uart.PARITY_EVEN, uart.STOPBITS_1, 0)
+
+    -- write on GPIO2 / D4
+    uart.setup(1, 9600, 8, uart.PARITY_EVEN, uart.STOPBITS_1, 0)
 end
 
 function hex(buf)

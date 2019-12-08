@@ -2,6 +2,10 @@
 
 A prometheus.io exporter for the Panasonic Aquarea H-generation heatpump, for a NodeMCU/ESP8266 connected to the CN-CNT port.
 
+## Dependencies
+
+NodeMCU master branch with `file`, `net`, `node`, `struct`, `timer`, `UART` and `WiFi` modules. You can use the [NodeMCU custom build service](https://nodemcu-build.com/) to build a firmware.
+
 ## Setup
 
   1. Add a file `credentials.lua` with the following contents:

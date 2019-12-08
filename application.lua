@@ -91,7 +91,7 @@ function telnet_init()
     end)
 end
 
-dofile('decode.lua')
+require('decode')
 telnet_init()
 uart_init()
 http_init()

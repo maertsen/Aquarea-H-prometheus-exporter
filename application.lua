@@ -41,7 +41,9 @@ function http_init()
                         sock:send("# RAW: "..hex(uart_response).."\n", function ()
                             local readout = parse_uart_response(uart_response)
                             uart_response = nil
-                            collectgarbage()
+
+                            readout.uptime = tmr.time()
+                            readout.mem_allocated, readout.mem_used = node.egc.meminfo()
 
                             -- sends and removes the first key, value pair from the 'readout' table
                             local function send(sck)

@@ -38,15 +38,8 @@ function http_init()
             conn:on("receive", function(sock, data)
                 print("h< "  .. data)
 
-                -- fail if response over uart takes too long
-                local timeout = tmr.create():register(3000, tmr.ALARM_SINGLE, function()
-                    uart.on("data") -- unregister callback
-                    sock:send(HTTP_TIMEOUT, function (sck) sck.close() end)
-                end)
-        
                 -- register response callback
                 uart.on("data", 0, function (uart_response)
-                    timeout:unregister()
                     print("u< "..hex(uart_response))
 
                     sock:send(HTTP_OK, function ()
@@ -78,7 +71,6 @@ function http_init()
                     end)
                 end, 0)
 
-                timeout:start()
                 uart_send_query()
             end)
         end)

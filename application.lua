@@ -67,7 +67,7 @@ function http_init()
 
                             send(sock)
                         end)
-                    uart.on("data") -- unregister callback
+                        uart.on("data") -- unregister callback
                     end)
                 end, 0)
 

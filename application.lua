@@ -37,9 +37,13 @@ function http_init()
         srv:listen(80, function(conn)
             conn:on("receive", function(sock, data)
                 print("h< "  .. data)
+                data = nil
+
+                -- clear receive buffer by re-init uart
+                uart.setup(0, 9600, 8, uart.PARITY_EVEN, uart.STOPBITS_1, 0)
 
                 -- register response callback
-                uart.on("data", 0, function (uart_response)
+                uart.on("data", 203, function (uart_response)
                     print("u< "..hex(uart_response))
 
                     sock:send(HTTP_OK, function ()

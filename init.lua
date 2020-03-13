@@ -7,10 +7,22 @@ function startup()
     if file.open("init.lua") == nil then
         print("init.lua deleted or renamed")
     else
-        print("Running")
-        file.close("init.lua")
-        -- the actual application is stored in 'application.lua'
-        dofile("application.lua")
+        if file.exists("application.lua") then
+          print("Remove old compiled code")
+          file.remove("application.lc")
+          print("Compile new code")
+          node.compile("application.lua")
+          tmr.create():alarm(5000, tmr.ALARM_SINGLE, function()
+            print("Restarting")
+            file.remove("application.lua")
+            node.restart()
+          end)
+        else
+          print("Running")
+          file.close("init.lua")
+          -- the actual application is stored in 'application.lc'
+          dofile("application.lc")
+        end
     end
 end
 

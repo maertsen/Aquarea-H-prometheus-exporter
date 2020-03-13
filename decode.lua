@@ -86,5 +86,12 @@ function parse_uart_response(res)
 
     d.room_heater_operating_time   =  struct.unpack('<B', res, 186) - 1
 
+    d.energy_heat_consumption      = (struct.unpack('<B', res, 194) - 1) / 5
+    d.energy_heat_generation       = (struct.unpack('<B', res, 195) - 1) / 5
+    d.energy_cool_consumption      = (struct.unpack('<B', res, 196) - 1) / 5
+    d.energy_cool_generation       = (struct.unpack('<B', res, 197) - 1) / 5
+    d.energy_dhw_consumption       = (struct.unpack('<B', res, 198) - 1) / 5
+    d.energy_dhw_generation        = (struct.unpack('<B', res, 199) - 1) / 5
+
     return d
 end

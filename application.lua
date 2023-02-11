@@ -39,8 +39,13 @@ function http_init()
                 print("h< "  .. data)
                 data = nil
 
-                -- clear receive buffer by re-init uart
-                uart.setup(0, 9600, 8, uart.PARITY_EVEN, uart.STOPBITS_1, 0)
+                -- clear receive buffer by reading leftovers in the queue
+                -- this prevents desyncs which were sometimes observed
+                queued = uart.fifodepth(0, uart.DIR_RX)
+                if queued > 0 then
+                    print("# " .. queued .. "bytes left in RX queue")
+                    uart.on("data", queued, function (data) uart.on("data") end) -- discard and unregister callback
+                end
 
                 -- register response callback
                 uart.on("data", 203, function (uart_response)
